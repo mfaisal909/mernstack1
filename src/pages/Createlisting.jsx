@@ -51,6 +51,28 @@ export default function CreateListing() {
     .getPublicUrl(fileName)
     return data.publicUrl
   }
+
+    const handleDeleteImage = async (url) => {
+    try {
+
+      const fileName = url.split("/").pop();
+
+      const { error } = await supabase.storage
+        .from("avatars")
+        .remove([fileName]);
+
+      if (error) {
+        throw error;
+      }
+
+      setImagesUrls((prev) => prev.filter((img) => img !== url));
+
+    } catch (err) {
+      console.error(err);
+      setError("Failed to delete image");
+    }
+  };
+
   return (
     <main className="p-6 max-w-6xl mx-auto">
       <div className="bg-white shadow-xl rounded-2xl p-8">
@@ -207,15 +229,26 @@ export default function CreateListing() {
                 <p className="text-red-600 mt-2 text-sm">{error}</p>
               )}
             </div>
-              {imageUrls.length > 0 && (
+            {imageUrls.length > 0 && (
               <div className="grid grid-cols-3 gap-4">
                 {imageUrls.map((url, index) => (
-                  <img
-                    key={index}
-                    src={url}
-                    alt="listing"
-                    className="h-24 w-full object-cover rounded-lg"
-                  />
+                  <div key={index} className="relative">
+
+                    <img
+                      src={url}
+                      alt="listing"
+                      className="h-24 w-full object-cover rounded-lg"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteImage(url)}
+                      className="absolute top-1 right-1 bg-red-600 text-white px-2 py-1 text-xs rounded-md hover:bg-red-700"
+                    >
+                      X
+                    </button>
+
+                  </div>
                 ))}
               </div>
             )}
@@ -232,4 +265,4 @@ export default function CreateListing() {
       </div>
     </main>
   );
-}  
+}   
