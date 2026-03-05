@@ -13,6 +13,7 @@ export default function Search() {
   });
   const [loading,setLoading]=useState(false)
   const [listings,setListings]=useState([])
+  const [showMore,setShowMore]=useState(false)
   console.log(listings)
    useEffect(()=>{
     const urlParams=new URLSearchParams(location.search)
@@ -39,9 +40,18 @@ export default function Search() {
     }
     const fetchListings=async()=>{
           setLoading(true)
+          setShowMore(false)
           const searchQuery=urlParams.toString()
           const res=await fetch(`/api/listing/get?${searchQuery}`)
           const data=await res.json();
+          if(data.length>8)
+          {
+            setShowMore(true )
+          }
+          else
+          {
+            setShowMore(false)
+          }
           setListings(data)
           setLoading(false)
     }
@@ -50,11 +60,9 @@ export default function Search() {
    },[location.search])
   
 
-  // ✅ Proper Universal Handle Function
   const handleChange = (e) => {
     const { id, value, checked, type } = e.target;
 
-    // ✅ Radio Buttons (Type)
     if (type === "radio") {
       setSidebardata((prev) => ({
         ...prev,
@@ -62,7 +70,6 @@ export default function Search() {
       }));
     }
 
-    // ✅ Search Input
     else if (id === "searchTerm") {
       setSidebardata((prev) => ({
         ...prev,
@@ -70,7 +77,6 @@ export default function Search() {
       }));
     }
 
-    // ✅ Checkbox
     else if (type === "checkbox") {
       setSidebardata((prev) => ({
         ...prev,
@@ -78,7 +84,6 @@ export default function Search() {
       }));
     }
 
-    // ✅ Sort Dropdown
     else if (id === "sort_order") {
       const [sort, order] = value.split("_");
 
@@ -102,10 +107,23 @@ export default function Search() {
     const searchQuery=urlParams.toString()
     navigate(`/search?${searchQuery}`)
   }
+  const onShowMoreClick=async()=>{
+      const numberOfListings=listings.length;
+      const startIndex=numberOfListings;
+      const urlParams=new URLSearchParams(location.search)
+      urlParams.set('startIndex',startIndex)
+      const searchQuery=urlParams.toString();
+      const res=await fetch(`/api/listing/get?${searchQuery}`)
+      const data=await res.json();
+      if(data.length<9)
+      {
+        setShowMore(false)
+      }
+      setListings([...listings,...data])
+  }
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row">
 
-      {/* ================= SIDEBAR ================= */}
       <div className="w-full md:w-80 bg-white shadow-xl p-8 border-r">
 
         <h2 className="text-2xl font-bold text-slate-700 mb-6">
@@ -114,7 +132,6 @@ export default function Search() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
-          {/* ================= SEARCH INPUT ================= */}
           <div className="flex flex-col gap-2">
             <label className="font-semibold text-slate-600">
               Search Term
@@ -130,7 +147,7 @@ export default function Search() {
             />
           </div>
 
-          {/* ================= TYPE RADIO ================= */}
+
           <div className="flex flex-col gap-3">
             <label className="font-semibold text-slate-600">
               Type
@@ -162,7 +179,7 @@ export default function Search() {
             </div>
           </div>
 
-          {/* ================= AMENITIES CHECKBOX ================= */}
+
           <div className="flex flex-col gap-3">
             <label className="font-semibold text-slate-600">
               Amenities
@@ -170,7 +187,7 @@ export default function Search() {
 
             <div className="flex gap-6">
 
-              {/* Parking */}
+
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -182,7 +199,6 @@ export default function Search() {
                 Parking
               </label>
 
-              {/* Furnished */}
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -197,7 +213,6 @@ export default function Search() {
             </div>
           </div>
 
-          {/* ================= SORT ================= */}
           <div className="flex flex-col gap-2">
             <label className="font-semibold text-slate-600">
               Sort By
@@ -227,7 +242,6 @@ export default function Search() {
             </select>
           </div>
 
-          {/* ================= SEARCH BUTTON ================= */}
           <button
             type="submit"
             className="bg-slate-700 text-white py-3 rounded-lg uppercase font-semibold tracking-wide hover:bg-slate-800 transition duration-300 shadow-md"
@@ -238,7 +252,6 @@ export default function Search() {
         </form>
       </div>
 
-      {/* ================= RESULTS ================= */}
       <div className="flex-1 p-6">
         <div className="bg-white rounded-xl shadow-md p-6">
           <h1 className="text-3xl font-bold text-slate-700 border-b pb-4">
@@ -254,6 +267,12 @@ export default function Search() {
                 <ListingItem key={listing._id} listing={listing}/>
               ))
             }
+            {showMore&&(
+              <button onClick={onShowMoreClick}
+              className="text-green-700 hover:underline p-7 text-center w-full">
+              Show more
+              </button>
+            )}
           </div>
         </div>
       </div>

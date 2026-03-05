@@ -62,7 +62,6 @@ export default function Listing() {
       {listing && !loading && !error && (
         <div className='relative'>
 
-          {/* 🔵 IMAGE SLIDER */}
           <Swiper navigation className='h-[600px] w-full'>
             {listing.imageUrls?.map((url, index) => (
               <SwiperSlide key={index}>
@@ -78,7 +77,6 @@ export default function Listing() {
             ))}
           </Swiper>
 
-          {/* 🔵 TITLE + PRICE */}
           <div className='p-5 flex flex-col gap-4'>
 
             <h1 className='text-3xl font-bold'>
@@ -89,13 +87,11 @@ export default function Listing() {
               {listing.type === 'rent' && ' / month'}
             </h1>
 
-            {/* 🔵 ADDRESS */}
             <p className='flex items-center gap-2 text-gray-600'>
               <FaMapMarkerAlt className='text-green-600' />
               {listing.address}
             </p>
 
-            {/* 🔵 BUTTONS */}
             <div className='flex gap-4'>
               {listing.type === 'rent' && (
                 <span className='bg-red-700 text-white px-3 py-1 rounded-md'>
@@ -112,7 +108,6 @@ export default function Listing() {
               )}
             </div>
 
-            {/* 🔵 DESCRIPTION */}
             <p className='text-gray-700 leading-relaxed'>
               <span className='font-semibold text-black'>
                 Description -{' '}
@@ -120,7 +115,6 @@ export default function Listing() {
               {listing.description}
             </p>
 
-            {/* 🔵 FEATURES */}
             <ul className='flex gap-6 text-green-700 font-semibold flex-wrap'>
 
               <li className='flex items-center gap-1'>
