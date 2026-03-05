@@ -107,7 +107,7 @@ export default function Listing() {
                 <span className='bg-green-600 text-white px-3 py-1 rounded-md'>
                   $
                   {listing.regularPrice - listing.discountPrice}
-                  {' '}discount
+                  {' '}OFF
                 </span>
               )}
             </div>
